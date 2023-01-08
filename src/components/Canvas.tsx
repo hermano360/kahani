@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { useCanvas } from "../hooks/useCanvas";
-import { RectInstance, CanvasHandlers } from "../utilities/types";
+import { RectInstance, CanvasHandlers } from "../types";
 
 interface CanvasProps {
   height: number;

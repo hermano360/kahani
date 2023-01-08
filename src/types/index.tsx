@@ -8,8 +8,19 @@ export type RectInstance = {
 };
 
 export type CanvasHandlers = {
-  handleDoubleClick: (x: number, y: number) => void;
-  handleDownClick: (x: number, y: number) => void;
-  handleUpClick: (x: number, y: number) => void;
-  handleMouseMove: (x: number, y: number) => void;
+  handleDoubleClick: CanvasHandler;
+  handleDownClick: CanvasHandler;
+  handleUpClick: CanvasHandler;
+  handleMouseMove: CanvasHandler;
 };
+
+export type CanvasHandler = (x: number, y: number) => void;
+
+export type ResizeSides = "top" | "left" | "right" | "bottom";
+
+export type LayoutInstance =  {
+  id: number
+  name: string 
+  rectangles: RectInstance[]
+}
+
