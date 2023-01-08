@@ -101,7 +101,14 @@ function App() {
   }, [rectangles]);
 
   return (
-    <div style={{ cursor }}>
+    <div
+      style={{
+        cursor,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
       <Canvas
         height={CANVAS_HEIGHT}
         width={CANVAS_WIDTH}
