@@ -30,6 +30,20 @@ const identifyRectangleSide = (
   return sides as ResizeSides[];
 };
 
+const handleRectangleMove = (
+  diffX: number,
+  diffY: number,
+  rectangle: RectInstance
+) => {
+  return {
+    ...rectangle,
+    x1: rectangle.x1 - diffX,
+    y1: rectangle.y1 - diffY,
+    x2: rectangle.x2 - diffX,
+    y2: rectangle.y2 - diffY,
+  };
+};
+
 const handleRectangleResize = (
   x: number,
   y: number,
@@ -151,11 +165,13 @@ function App() {
   const [isDragging, setIsDragging] = useState(false);
   const [isResizingSide, setIsResizingSide] = useState<ResizeSides[]>([]);
   const [currentResizing, setCurrentResizing] = useState<ResizeSides[]>([]);
+  const [startingDrag, setStartingDrag] = useState([0, 0]);
 
   const handleDownClick = (x: number, y: number) => {
     if (isAboveArea) {
       setIsDragging(true);
       setCurrentRectangle(isAboveArea);
+      setStartingDrag([x, y]);
     } else if (isAboveEdge) {
       setCurrentResizing(isResizingSide);
       setIsResizingSide([]);
@@ -174,24 +190,30 @@ function App() {
   };
   const handleUpClick = (x: number, y: number) => {
     const rectangle = findRectangleById(currentRectangle, rectangles);
+    let newRectangle = rectangle;
+
     if (!rectangle) return;
 
     if (isDragging) {
       setIsDragging(false);
-    } else if (currentResizing.length > 0) {
-      const newRectangle = handleRectangleResize(
-        x,
-        y,
-        rectangle,
-        currentResizing
-      );
-      const newRectagles = rectangles.map((rect) => {
-        return rect.id === currentRectangle ? newRectangle : rectangle;
-      });
 
-      setRectangles(newRectagles);
+      const diffX = startingDrag[0] - x;
+      const diffY = startingDrag[1] - y;
+
+      newRectangle = handleRectangleMove(diffX, diffY, rectangle);
+    } else if (currentResizing.length > 0) {
+      newRectangle = handleRectangleResize(x, y, rectangle, currentResizing);
+
       setCurrentResizing([]);
     }
+
+    const newRectangles = rectangles
+      .filter((a) => a)
+      .map((rect) => {
+        return rect.id === currentRectangle ? newRectangle : rectangle;
+      }) as RectInstance[];
+
+    setRectangles(newRectangles);
     setCurrentRectangle(0);
   };
 
