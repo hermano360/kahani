@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 
 import { LayoutInstance } from "../types";
 
@@ -18,6 +18,9 @@ export const Layout: FC<LayoutProps> = ({
   onDelete,
   selected,
 }) => {
+  const [layoutName, setLayoutName] = useState(layout.name);
+  const [isRenaming, setIsRenaming] = useState(false);
+
   return (
     <div
       style={{
@@ -26,9 +29,36 @@ export const Layout: FC<LayoutProps> = ({
         padding: "5px",
         marginBottom: "5px",
         backgroundColor: selected ? "grey" : "white",
+        color: selected ? "white" : "black",
+        width: '100%'
       }}
     >
-      <div>{layout.name || `Layout ${layout.id}`}</div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        {isRenaming ? (
+          <>
+            <input
+              value={layoutName}
+              onChange={(e) => setLayoutName(e.target.value)}
+            />
+            <button
+              onClick={() => {
+                onEdit({ ...layout, name: layoutName });
+                setIsRenaming(false);
+              }}
+            >
+              Save
+            </button>
+          </>
+        ) : (
+          <>
+            <div style={{ marginRight: "5px" }}>
+              {layout.name || `Layout ${layout.id}`}
+            </div>
+            <button onClick={() => setIsRenaming(true)}>Rename</button>
+          </>
+        )}
+      </div>
+
       <div
         style={{
           display: "flex",
