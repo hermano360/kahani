@@ -8,6 +8,26 @@ import {
   STANDARD_RECT_SIZE,
 } from "./utilities/constants";
 
+const updateRectangleColor = (
+  selectedId: number,
+  rectangles: RectInstance[]
+): RectInstance[] => {
+  const rectangle = findRectangleById(selectedId, rectangles);
+
+  return rectangles.map((rect) => {
+    return rect.id === selectedId && rectangle
+      ? {
+          ...rectangle,
+          color: [
+            Math.random() * 255,
+            Math.random() * 255,
+            Math.random() * 255,
+          ],
+        }
+      : rect;
+  });
+};
+
 const identifyRectangleSide = (
   rectangle: RectInstance,
   x: number,
@@ -182,8 +202,10 @@ function App() {
   const handleDoubleClick = (x: number, y: number) => {
     const selectedId = isAboveArea || isAboveEdge;
 
-    if (selectedId) {
+    if (isAboveArea) {
       setRectangles(removeRectangleById(selectedId, rectangles));
+    } else if (isAboveEdge) {
+      setRectangles(updateRectangleColor(selectedId, rectangles));
     } else {
       setRectangles([...rectangles, generateNewRectangle(x, y)]);
     }
