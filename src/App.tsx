@@ -34,16 +34,16 @@ const identifyRectangleSide = (
   y: number
 ): ResizeSides[] => {
   const sides = [];
-  if (isAboveEdge(rectangle.x1, x)) {
+  if (isMouseAboveEdge(rectangle.x1, x, rectangle.y1, rectangle.y2, y)) {
     sides.push("left" as ResizeSides);
   }
-  if (isAboveEdge(rectangle.x2, x)) {
+  if (isMouseAboveEdge(rectangle.x2, x, rectangle.y1, rectangle.y2, y)) {
     sides.push("right" as ResizeSides);
   }
-  if (isAboveEdge(rectangle.y1, y)) {
+  if (isMouseAboveEdge(rectangle.y1, y, rectangle.x1, rectangle.x2, x)) {
     sides.push("top" as ResizeSides);
   }
-  if (isAboveEdge(rectangle.y2, y)) {
+  if (isMouseAboveEdge(rectangle.y2, y, rectangle.x1, rectangle.x2, x)) {
     sides.push("bottom" as ResizeSides);
   }
 
@@ -145,10 +145,18 @@ const isAboveRectangleArea = (
   return id;
 };
 
-const isAboveEdge = (border: number, dimension: number) => {
+const isMouseAboveEdge = (
+  border: number,
+  dimension: number,
+  lowLimit: number,
+  highLimit: number,
+  otherDimension: number
+) => {
   return (
     dimension > border - CLICK_TOLERANCE_WIDTH &&
-    dimension < border + CLICK_TOLERANCE_WIDTH
+    dimension < border + CLICK_TOLERANCE_WIDTH &&
+    otherDimension > lowLimit - CLICK_TOLERANCE_WIDTH &&
+    otherDimension < highLimit + CLICK_TOLERANCE_WIDTH
   );
 };
 
@@ -161,10 +169,10 @@ const isAboveRectangleEdge = (
     if (acc) return acc;
 
     if (
-      isAboveEdge(el.x1, x) ||
-      isAboveEdge(el.x2, x) ||
-      isAboveEdge(el.y1, y) ||
-      isAboveEdge(el.y2, y)
+      isMouseAboveEdge(el.x1, x, el.y1, el.y2, y) ||
+      isMouseAboveEdge(el.x2, x, el.y1, el.y2, y) ||
+      isMouseAboveEdge(el.y1, y, el.x1, el.x2, x) ||
+      isMouseAboveEdge(el.y2, y, el.x1, el.x2, x)
     ) {
       return el.id;
     } else {
@@ -231,9 +239,9 @@ function App() {
 
     const newRectangles = rectangles
       .filter((a) => a)
-      .map((rect) => {
-        return rect.id === currentRectangle ? newRectangle : rectangle;
-      }) as RectInstance[];
+      .map((rect) =>
+        rect.id === currentRectangle ? newRectangle : rect
+      ) as RectInstance[];
 
     setRectangles(newRectangles);
     setCurrentRectangle(0);
@@ -272,7 +280,6 @@ function App() {
           handleMouseMove,
         }}
       />
-      {isAboveEdge}
       <Layouts />
     </div>
   );
